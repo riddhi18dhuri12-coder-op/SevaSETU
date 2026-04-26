@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ReliefSync | AI-Powered Crisis Response</title>
 
-  <!-- Google Fonts: Inter (The standard for tech startups) -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Feather Icons (For Login/Signup/Interactive Icons) -->
+  <script src="https://unpkg.com/feather-icons"></script>
 
   <style>
-    /* --- CSS VARIABLES & RESET --- */
+    /* --- CSS VARIABLES & RESET (KEPT EXISTING) --- */
     :root {
       --primary: #10b981;       /* Emerald 500 */
       --primary-dark: #059669;  /* Emerald 600 */
@@ -41,7 +44,7 @@
     a { text-decoration: none; color: inherit; transition: 0.3s; }
     ul { list-style: none; }
 
-    /* --- ANIMATIONS --- */
+    /* --- ANIMATIONS (KEPT + ADDED) --- */
     @keyframes float {
       0% { transform: translateY(0px); }
       50% { transform: translateY(-20px); }
@@ -52,6 +55,9 @@
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+    @keyframes scan { 0% { top: 120px; opacity: 0; } 50% { opacity: 1; } 100% { top: 280px; opacity: 0; } }
 
     .fade-up {
       opacity: 0;
@@ -64,7 +70,7 @@
       transform: translateY(0);
     }
 
-    /* --- NAVBAR --- */
+    /* --- NAVBAR (UPDATED FOR LOGIN/SIGNUP) --- */
     .navbar {
       display: flex;
       justify-content: space-between;
@@ -101,6 +107,8 @@
     }
 
     .nav-links a:hover { color: var(--primary); }
+    
+    .btn-text { font-weight: 600; cursor: pointer; }
 
     .btn-primary {
       background: var(--primary);
@@ -117,7 +125,7 @@
       background: var(--primary-dark);
     }
 
-    /* --- HERO SECTION --- */
+    /* --- HERO SECTION (UPDATED FOR INTERACTIVITY) --- */
     .hero {
       padding-top: 140px;
       padding-bottom: 80px;
@@ -130,7 +138,6 @@
       overflow: hidden;
     }
 
-    /* Abstract Shapes */
     .shape {
       position: absolute;
       border-radius: 50%;
@@ -182,7 +189,10 @@
       margin: 0 auto;
       border: 1px solid rgba(0,0,0,0.05);
       animation: float 6s infinite ease-in-out;
+      cursor: pointer; /* Interactive cursor */
     }
+    
+    .hero-card:hover { transform: translateY(-5px); }
 
     .mock-header {
       display: flex;
@@ -202,7 +212,121 @@
         animation: pulse 2s infinite;
     }
 
-    /* --- FEATURES --- */
+    /* --- NEW: LIVE IMPACT COUNTER --- */
+    .live-stats {
+      background: var(--dark);
+      color: white;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .stat-box h3 {
+      font-size: 14px;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .stat-box .number {
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    /* --- NEW: MOBILE PREVIEW --- */
+    .mobile-preview {
+      padding: 80px 20px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 50px;
+      flex-wrap: wrap;
+    }
+
+    .mobile-text {
+      flex: 1;
+      max-width: 500px;
+    }
+
+    .india-tag {
+      background: #f59e0b; /* Orange for India context */
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+
+    .phone-mockup {
+      width: 280px;
+      height: 550px;
+      background: black;
+      border-radius: 35px;
+      border: 8px solid #333;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+
+    .phone-screen {
+      background: white;
+      height: 100%;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .app-header { font-weight: bold; margin-bottom: 20px; text-align: center; color: #333; }
+    
+    .scanner-box {
+      border: 2px dashed #ccc;
+      height: 200px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      margin-bottom: 20px;
+      font-size: 12px;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .scan-line {
+      height: 2px; width: 100%; background: var(--primary);
+      position: absolute; top: 250px; animation: scan 2s infinite linear; display: none;
+    }
+    
+    .active-scan .scan-line { display: block; }
+
+    .scan-btn {
+      margin-top: auto;
+      width: 100%;
+      background: var(--primary);
+      border: none;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .scan-btn:hover { background: var(--primary-dark); }
+
+    /* --- FEATURES (KEPT) --- */
     .features {
       padding: 100px 20px;
       background: white;
@@ -266,7 +390,7 @@
     .feature-card h3 { font-size: 20px; margin-bottom: 10px; }
     .feature-card p { color: var(--gray); font-size: 15px; }
 
-    /* --- HOW IT WORKS (TIMELINE) --- */
+    /* --- HOW IT WORKS (TIMELINE) (KEPT) --- */
     .steps-section {
       padding: 100px 20px;
       background: var(--dark);
@@ -326,7 +450,7 @@
       border: 4px solid var(--dark);
     }
 
-    /* --- CTA --- */
+    /* --- CTA (KEPT) --- */
     .cta {
       padding: 100px 20px;
       background: var(--primary);
@@ -346,7 +470,7 @@
       font-size: 18px;
     }
 
-    /* --- FOOTER --- */
+    /* --- FOOTER (KEPT) --- */
     footer {
       background: var(--dark);
       color: var(--gray);
@@ -355,7 +479,7 @@
       font-size: 14px;
     }
 
-    /* --- RESPONSIVE --- */
+    /* --- RESPONSIVE (KEPT + UPDATED) --- */
     @media (max-width: 768px) {
       .hero-container { grid-template-columns: 1fr; text-align: center; }
       .hero-text h1 { font-size: 40px; }
@@ -367,7 +491,7 @@
       .nav-links { display: none; } /* Hide for simplicity in this demo */
     }
 
-        /* --- CASE STUDIES CSS --- */
+    /* --- CASE STUDIES CSS (KEPT) --- */
     .case-studies {
       padding: 100px 20px;
       background: white;
@@ -412,11 +536,53 @@
       margin: 5px 0 10px 0;
       color: var(--dark);
     }
+
+        /* --- LIVE IMPACT COUNTERS CSS --- */
+    .live-stats {
+      background: var(--dark); /* Dark background */
+      color: white;
+      padding: 60px 20px; /* Generous padding */
+      text-align: center;
+    }
+
+    .stats-grid {
+      display: grid;
+      /* Responsive grid: automatically adjusts columns based on width */
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px; /* Space between boxes */
+      max-width: 1200px;
+      margin: 0 auto; /* Center horizontally */
+    }
+
+    .stat-box {
+      /* Optional: Add border or shadow if you want */
+    }
+
+    .stat-box h3 {
+      font-size: 14px;
+      color: var(--gray); /* Muted text color */
+      text-transform: uppercase;
+      letter-spacing: 1px; /* Professional spacing */
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .stat-box .number {
+      font-size: 42px; /* Large number */
+      font-weight: 800; /* Bold */
+      color: var(--primary); /* Default Green Color */
+    }
+
+    /* Specific style for the critical alert to make it Red */
+    .stat-box .number.red-alert {
+      color: var(--danger); /* Red color defined in variables */
+      animation: pulse-red 2s infinite; /* Apply pulsing animation */
+    }
   </style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
+  <!-- NAVBAR (UPDATED) -->
   <nav class="navbar">
     <div class="logo">
       <!-- SVG Logo -->
@@ -427,11 +593,13 @@
       <a href="#features">Features</a>
       <a href="#how-it-works">How It Works</a>
       <a href="#case-studies">Case Studies</a>
-      <a href="dashboard.html" class="btn-primary">Launch Dashboard</a>
+      <!-- Added Login/Signup -->
+      <a href="login.html" class="btn-text">Login</a>
+      <a href="login.html" class="btn-primary">Sign Up</a>
     </div>
   </nav>
 
-  <!-- HERO SECTION -->
+  <!-- HERO SECTION (UPDATED FOR INTERACTIVITY) -->
   <header class="hero">
     <div class="shape shape-1"></div>
     <div class="shape shape-2"></div>
@@ -442,13 +610,13 @@
         <p>The world's first AI-driven disaster response platform. We aggregate scattered community data to connect volunteers with those who need help most.</p>
         <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: flex-start;">
           <a href="dashboard.html" class="btn-primary">Go to Dashboard</a>
-          <a href="#how-it-works" style="padding: 12px 28px; font-weight: 600;">View Demo</a>
+          <a href="#demo" onclick="startHeroDemo()" style="padding: 12px 28px; font-weight: 600; color: var(--primary-dark);">▶ Watch Demo</a>
         </div>
       </div>
 
+      <!-- Interactive Mockup -->
       <div class="hero-image fade-up">
-        <!-- Professional UI Mockup -->
-        <div class="hero-card">
+        <div class="hero-card" onclick="startHeroDemo()">
           <div class="mock-header">
             <span style="font-size:12px; font-weight:600; color:#333">Live Incidents</span>
             <div>
@@ -458,7 +626,7 @@
           </div>
           <div class="mock-body">
             <!-- CSS Map Graphic -->
-            <div style="width:100%; height:100%; background:#e2e8f0; position:relative;">
+            <div id="demo-content" style="width:100%; height:100%; background:#e2e8f0; position:relative; display:flex; align-items:center; justify-content:center;">
                 <div class="mock-map-pulse"></div>
                 <div style="position:absolute; top:20%; left:30%; width:8px; height:8px; background:#ef4444; border-radius:50%;"></div>
                 <div style="position:absolute; top:60%; left:70%; width:8px; height:8px; background:#f97316; border-radius:50%;"></div>
@@ -467,14 +635,32 @@
           </div>
           <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center;">
             <div style="font-size:12px; color:#64748b;">System Status: <strong style="color:#10b981">Online</strong></div>
-            <div style="font-size:12px; color:#64748b;">14 Pending</div>
+            <div style="font-size:12px; color:#64748b;" id="hero-pending">14 Pending</div>
           </div>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- FEATURES -->
+  <!-- NEW: LIVE IMPACT COUNTER -->
+  <section class="live-stats">
+    <div class="stats-grid">
+      <div class="stat-box fade-up">
+        <h3>Requests Handled Today</h3>
+        <div class="number" data-target="1245">0</div>
+      </div>
+      <div class="stat-box fade-up">
+        <h3>Volunteers Active Now</h3>
+        <div class="number" data-target="342">0</div>
+      </div>
+<div class="stat-box fade-up">
+  <h3>Critical Alerts (Live)</h3>
+  <!-- Notice the added class here -->
+  <div class="number red-alert" data-target="14">0</div>
+</div>
+  </section>
+
+  <!-- FEATURES (KEPT) -->
   <section id="features" class="features">
     <div class="section-header fade-up">
       <h2>Built for Resilience</h2>
@@ -520,7 +706,7 @@
     </div>
   </section>
 
-  <!-- HOW IT WORKS -->
+  <!-- HOW IT WORKS (KEPT) -->
   <section id="how-it-works" class="steps-section">
     <div class="section-header fade-up" style="color:white;">
       <h2 style="color:white;">How It Works</h2>
@@ -556,12 +742,13 @@
         <div class="step-number">4</div>
         <div class="step-content">
           <h3>Resolution</h3>
-          <p>Volunteers complete the task, upload verification photos, and the case is closed.</p>
+          <p>Volunteers complete task, upload verification photos, and the case is closed.</p>
         </div>
       </div>
     </div>
   </section>
-  <!-- CASE STUDIES SECTION -->
+
+  <!-- CASE STUDIES (KEPT) -->
   <section class="case-studies">
     <div class="section-header fade-up">
       <h2>Impact in Action</h2>
@@ -645,21 +832,54 @@
 
     </div>
   </section>
-  <!-- CTA -->
+
+  <!-- NEW: MOBILE PREVIEW -->
+  <section class="mobile-preview">
+    <div class="mobile-text fade-up">
+        <span class="india-tag">MADE FOR INDIA</span>
+        <h2 style="margin-bottom: 20px; font-size: 32px;">Works in Low Connectivity</h2>
+        <p style="color:var(--gray); font-size:16px; margin-bottom: 20px;">
+            Designed for dense urban areas like Mumbai and rural zones where internet is unstable. 
+            Our offline scanner ensures no report is ever lost.
+        </p>
+        <ul style="color: var(--dark); line-height: 2; font-size: 15px;">
+            <li style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><i data-feather="check-circle" style="color:var(--primary); width:18px;"></i> Local Data Storage</li>
+            <li style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><i data-feather="check-circle" style="color:var(--primary); width:18px;"></i> Auto-Sync on Reconnect</li>
+            <li style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><i data-feather="check-circle" style="color:var(--primary); width:18px;"></i> Hindi & English Support</li>
+        </ul>
+    </div>
+    <div class="phone-mockup fade-up">
+        <div class="phone-screen">
+            <div class="app-header">ReliefSync Field App</div>
+            <div class="scanner-box" id="phone-scanner">
+                <i data-feather="camera" width="32"></i>
+                <br><br>Point at Paper Form
+            </div>
+            <div class="scan-line"></div>
+            <div style="margin-top: auto;">
+                <button onclick="activateScan()" class="scan-btn">Scan Document</button>
+            </div>
+        </div>
+    </div>
+  </section>
+
+  <!-- CTA (KEPT) -->
   <section class="cta">
     <h2>Ready to save lives?</h2>
     <p>Join the network of 500+ organizations making data-driven decisions.</p>
     <a href="/dashboard.html" class="btn-white">Launch Dashboard Demo</a>
   </section>
 
-  <!-- FOOTER -->
+  <!-- FOOTER (KEPT) -->
   <footer>
     <p>&copy; 2023 ReliefSync. Building a more resilient world.</p>
   </footer>
 
-  <!-- INTERACTION SCRIPT -->
+  <!-- INTERACTION SCRIPT (UPDATED) -->
   <script>
-    // Simple Intersection Observer for scroll animations
+    feather.replace();
+
+    // 1. EXISTING OBSERVER
     document.addEventListener('DOMContentLoaded', () => {
       const observerOptions = {
         threshold: 0.1
@@ -676,6 +896,48 @@
       const fadeElements = document.querySelectorAll('.fade-up');
       fadeElements.forEach(el => observer.observe(el));
     });
+
+    // 2. NEW: LIVE COUNTER ANIMATION
+    const counters = document.querySelectorAll('.number');
+    counters.forEach(counter => {
+      const target = +counter.getAttribute('data-target');
+      const inc = target / 100;
+      const updateCount = () => {
+        const count = +counter.innerText;
+        if (count < target) {
+          counter.innerText = Math.ceil(count + inc);
+          setTimeout(updateCount, 20);
+        } else {
+          counter.innerText = target;
+        }
+      };
+      updateCount();
+    });
+
+    // 3. NEW: INTERACTIVE HERO DEMO
+    function startHeroDemo() {
+      const content = document.getElementById('demo-content');
+      const pendingText = document.getElementById('hero-pending');
+      
+      // Simple demo flow
+      content.innerHTML = `<h3 style="color:var(--primary); font-weight:bold;">Analyzing...</h3>`;
+      pendingText.innerText = "15 Pending"; // Increment
+      
+      setTimeout(() => {
+        content.innerHTML = `<h3 style="color:var(--primary); font-weight:bold;">Match Found!</h3>`;
+        pendingText.innerText = "14 Pending"; // Decrement
+      }, 1000);
+    }
+
+    // 4. NEW: PHONE SCANNER SIMULATION
+    function activateScan() {
+        const phone = document.querySelector('.phone-mockup');
+        phone.classList.add('active-scan');
+        setTimeout(() => {
+            alert("Success! Document Digitized.");
+            phone.classList.remove('active-scan');
+        }, 2000);
+    }
   </script>
 
 </body>
