@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - ReliefSync</title>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --bg-light: #f8fafc;
+            --text-dark: #0f172a;
+            --text-gray: #64748b;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .auth-container {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 520px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo-text {
+            font-weight: 800;
+            font-size: 28px;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius);
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: 0.2s;
+            background: #f9fafb;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Role Selection Cards */
+        .role-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .role-card {
+            border: 2px solid #e2e8f0;
+            border-radius: var(--radius);
+            padding: 15px 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #f9fafb;
+        }
+
+        .role-card:hover {
+            border-color: var(--primary);
+            background: #ecfdf5;
+        }
+
+        .role-card.active {
+            border-color: var(--primary);
+            background: #ecfdf5;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        .role-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--text-gray);
+        }
+
+        .role-card.active .role-icon {
+            color: var(--primary-dark);
+        }
+
+        .role-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* DYNAMIC FORM SECTIONS */
+        .form-section {
+            display: none; /* HIDDEN BY DEFAULT */
+            animation: slideDown 0.3s ease;
+        }
+        
+        /* We use this class to manually override display:none via JS for reliability */
+        .force-show {
+            display: block !important;
+        }
+
+        .force-hide {
+            display: none !important;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .location-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .location-label {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-top: -5px;
+            margin-bottom: 8px;
+        }
+
+        .citizen-info {
+            background: #f0fdf4;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: var(--text-dark);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            transition: 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .error-msg {
+            color: #ef4444;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            background: #fee2e2;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+
+        .login-link a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOAD CONFIG -->
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <div class="auth-container">
+        <div class="logo-area">
+            <div class="logo-text">
+                <i data-feather="shield"></i> ReliefSync
+            </div>
+        </div>
+
+        <div id="error-display" class="error-msg"></div>
+
+        <form id="signup-form">
+            <!-- Common Fields -->
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" placeholder="e.g. Rahul Sharma" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="rahul@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Create a password" required>
+            </div>
+
+            <!-- Role Selection -->
+            <label>Select Your Role</label>
+            <div class="role-options">
+                <!-- Volunteer -->
+                <div class="role-card active" id="card-volunteer" onclick="switchForm('volunteer')">
+                    <div class="role-icon"><i data-feather="user"></i></div>
+                    <div class="role-name">Volunteer</div>
+                </div>
+                <!-- Citizen -->
+                <div class="role-card" id="card-citizen" onclick="switchForm('citizen')">
+                    <div class="role-icon"><i data-feather="map-pin"></i></div>
+                    <div class="role-name">Citizen</div>
+                </div>
+                <!-- NGO / Admin -->
+                <div class="role-card" id="card-ngo" onclick="switchForm('ngo')">
+                    <div class="role-icon"><i data-feather="briefcase"></i></div>
+                    <div class="role-name">NGO / Admin</div>
+                </div>
+            </div>
+
+            <!-- 1. VOLUNTEER FORM -->
+            <div id="volunteer-form" class="form-section force-show">
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="+91 98765 43210">
+                </div>
+                <div class="form-group">
+                    <label for="skills">Primary Skill</label>
+                    <select id="skills">
+                        <option value="" disabled selected>Select your skill...</option>
+                        <option value="Medical">Medical</option>
+                        <option value="Food">Food Distribution</option>
+                        <option value="Logistics">Logistics / Driving</option>
+                        <option value="Rescue">Search & Rescue</option>
+                        <option value="General">General Help</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 2. CITIZEN FORM -->
+            <div id="citizen-form" class="form-section force-hide">
+                <div class="citizen-info">
+                    Report problems in your area instantly.
+                </div>
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" placeholder="e.g. Mumbai" value="Mumbai">
+                </div>
+                <div class="location-grid">
+                    <div class="form-group">
+                        <label>Area</label>
+                        <input type="text" id="area" placeholder="e.g. Dadar, Bandra">
+                    </div>
+                    <div class="form-group">
+                        <label>Pincode</label>
+                        <input type="text" id="pincode" placeholder="e.g. 400014">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. NGO FORM (Uses Volunteer fields for now, simplified) -->
+            <div id="ngo-form" class="form-section force-hide">
+                 <div class="form-group">
+                    <label for="org-name">Organization Name</label>
+                    <input type="text" id="org-name" placeholder="NGO Name">
+                </div>
+                 <div class="form-group">
+                    <label for="phone">Contact Phone</label>
+                    <input type="tel" id="ngo-phone" placeholder="Contact Number">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Create Account</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="login.html">Log In</a>
+        </div>
+    </div>
+
+    <script>
+        // 1. Initialize Icons
+        feather.replace();
+
+        // 2. Initialize Supabase
+        const supabase = window.supabase.createClient(window.ENV.SUPABASE_URL, window.ENV.SUPABASE_KEY);
+        let selectedRole = 'volunteer'; // Default
+
+        // 3. UPDATED SWITCH LOGIC (Reliable)
+        function switchForm(role) {
+            selectedRole = role;
+            
+            // 1. Reset all card styles
+            document.querySelectorAll('.role-card').forEach(card => {
+                card.classList.remove('active');
+            });
+
+            // 2. Highlight selected card
+            if(role === 'volunteer') document.getElementById('card-volunteer').classList.add('active');
+            if(role === 'citizen') document.getElementById('card-citizen').classList.add('active');
+            if(role === 'ngo') document.getElementById('card-ngo').classList.add('active');
+
+            // 3. DIRECTLY MANIPULATE DISPLAY (The Fix)
+            const volForm = document.getElementById('volunteer-form');
+            const citForm = document.getElementById('citizen-form');
+            const ngoForm = document.getElementById('ngo-form');
+
+            // Hide all first
+            volForm.classList.remove('force-show');
+            volForm.classList.add('force-hide');
+            
+            citForm.classList.remove('force-show');
+            citForm.classList.add('force-hide');
+
+            ngoForm.classList.remove('force-show');
+            ngoForm.classList.add('force-hide');
+
+            // Show specific one
+            if (role === 'volunteer') {
+                volForm.classList.remove('force-hide');
+                volForm.classList.add('force-show');
+            } else if (role === 'citizen') {
+                citForm.classList.remove('force-hide');
+                citForm.classList.add('force-show');
+            } else if (role === 'ngo') {
+                ngoForm.classList.remove('force-hide');
+                ngoForm.classList.add('force-show');
+            }
+        }
+
+        // 4. Handle Form Submission
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorDisplay = document.getElementById('error-display');
+            errorDisplay.style.display = 'none';
+
+            // Common Fields
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Metadata Base
+            let metadata = { full_name: name, role: selectedRole };
+
+            // Add Fields based on Role
+            if (selectedRole === 'volunteer') {
+                metadata.phone = document.getElementById('phone').value;
+                metadata.skills = document.getElementById('skills').value;
+            } else if (selectedRole === 'citizen') {
+                metadata.city = document.getElementById('city').value;
+                metadata.area = document.getElementById('area').value;
+                metadata.pincode = document.getElementById('pincode').value;
+            } else if (selectedRole === 'ngo') {
+                 metadata.phone = document.getElementById('ngo-phone').value;
+                 metadata.organization = document.getElementById('org-name').value;
+            }
+
+            const btn = document.querySelector('.btn-submit');
+            const originalBtnText = btn.innerText;
+            btn.innerText = "Creating Account...";
+            btn.disabled = true;
+
+            try {
+                // SUPABASE SIGNUP
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: metadata
+                    }
+                });
+
+                if (error) {
+                    throw error;
+                }
+
+                // SUCCESS
+                alert(`Success! Account created for ${selectedRole.toUpperCase()}. Redirecting to login...`);
+                window.location.href = 'login.html';
+
+            } catch (error) {
+                errorDisplay.innerText = error.message || "Signup failed. Please try again.";
+                errorDisplay.style.display = 'block';
+                btn.innerText = originalBtnText;
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
