@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SevaSETU | Admin Dashboard</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Leaflet Map CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<style>
+  :root {
+    --primary: #059669; /* Emerald 600 */
+    --bg-dark: #0f172a;
+    --bg-light: #f1f5f9;
+    --surface: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    background: var(--bg-light);
+    color: var(--text-main);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* --- SIDEBAR --- */
+  .sidebar {
+    width: 260px;
+    background: var(--bg-dark);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+  }
+
+  .brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--primary);
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #94a3b8;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    transition: all 0.2s;
+  }
+
+  .nav-link:hover, .nav-link.active {
+    background: rgba(255,255,255,0.1);
+    color: white;
+  }
+
+  /* --- MAIN AREA --- */
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header h1 { margin: 0; font-size: 1.8rem; font-weight: 700; }
+  
+  .user-badge {
+    background: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+
+  /* --- STATS GRID --- */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid var(--primary);
+  }
+
+  .stat-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-card .value { font-size: 2rem; font-weight: 700; color: var(--text-main); }
+
+  /* --- ANALYTICS SECTION (MAP + CHART) --- */
+  .analytics-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+  }
+
+  .panel {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-header {
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: var(--text-main);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #map-container {
+    width: 100%;
+    height: 400px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #e2e8f0;
+    z-index: 1;
+  }
+  
+  #map { height: 100%; width: 100%; }
+
+  .chart-wrapper {
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* --- TABLE SECTION --- */
+  .table-section {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  
+  th, td {
+    text-align: left;
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  
+  th { color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; }
+
+  .status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .status-pending { background: #fff7ed; color: #c2410c; }
+  .status-verified { background: #ecfdf5; color: #047857; }
+
+  .ai-btn {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ai-btn:hover { opacity: 0.9; }
+  
+  .score-display {
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .score-high { color: #ef4444; }
+  .score-med { color: #f59e0b; }
+  .score-low { color: #10b981; }
+
+  .action-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  .action-btn:hover { background: #047857; }
+
+  @media (max-width: 900px) {
+    .sidebar { width: 70px; padding: 20px 10px; }
+    .brand span, .nav-link span { display: none; }
+    .nav-link { justify-content: center; }
+    .brand { justify-content: center; }
+    .analytics-row { grid-template-columns: 1fr; }
+    #map-container, .chart-wrapper { height: 300px; }
+  }
+</style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="brand">
+      <i class="fa-solid fa-bridge-water"></i>
+      <span>SevaSETU</span>
+    </div>
+    <nav>
+      <a href="#" class="nav-link active"><i class="fa-solid fa-chart-line"></i> <span>Dashboard</span></a>
+      <a href="#" class="nav-link"><i class="fa-solid fa-map-location-dot"></i> <span>Live Map</span></a>
+      <a href="#" class="nav-link"><i class="fa-solid fa-users"></i> <span>Volunteers</span></a>
+      <a href="#" class="nav-link" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></a>
+    </nav>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <h1>Admin Overview</h1>
+        <p style="margin:0; color:var(--text-muted)">Real-time monitoring of citizen reports</p>
+      </div>
+      <div class="user-badge">
+        <i class="fa-solid fa-user-shield"></i> Admin
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Reports</h3>
+        <div class="value" id="total-count">0</div>
+      </div>
+      <div class="stat-card" style="border-left-color: #f59e0b">
+        <h3>Pending Review</h3>
+        <div class="value" id="pending-count">0</div>
+      </div>
+      <div class="stat-card" style="border-left-color: #3b82f6">
+        <h3>Verified Reports</h3>
+        <div class="value" id="verified-count">0</div>
+      </div>
+    </div>
+
+    <!-- Analytics Row (Map + Chart) -->
+    <div class="analytics-row">
+      <!-- Map Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <span><i class="fa-solid fa-map"></i> Incident Locations</span>
+          <small style="color:var(--text-muted)">India View</small>
+        </div>
+        <div id="map-container">
+          <div id="map"></div>
+        </div>
+      </div>
+
+      <!-- Chart Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <span><i class="fa-solid fa-chart-pie"></i> Categories</span>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="categoryChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reports Table -->
+    <div class="table-section">
+      <div class="panel-header">
+        <span>Recent Citizen Reports</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Priority Score</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="reports-body">
+          <!-- Data injected here -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+<!-- SCRIPTS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // --- 1. CONFIG & STATE ---
+  let supabase, map, chart;
+  let markers = [];
+  
+  // --- 2. INIT APP ---
+  async function initApp() {
+    // Connect to Supabase (if config exists)
+    try {
+        if(window.ENV && !window.ENV.SUPABASE_URL.includes("mock")) {
+            supabase = window.supabase.createClient(window.ENV.SUPABASE_URL, window.ENV.SUPABASE_KEY);
+            await checkRole();
+            listenToUpdates();
+        } else {
+            console.log("Running in DEMO MODE. Using local data.");
+        }
+    } catch(e) {
+        console.log("Running in DEMO MODE. Using local data.");
+    }
+
+    initMap();
+    initChart();
+    loadData();
+  }
+
+  // --- 3. MAP LOGIC ---
+  function initMap() {
+    map = L.map('map').setView([20.5937, 78.9629], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+  }
+
+  function updateMap(reports) {
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+    reports.forEach(r => {
+      if(r.latitude && r.longitude) {
+        const color = r.status === 'verified' ? '#10b981' : '#f59e0b';
+        const marker = L.circleMarker([r.latitude, r.longitude], {
+          radius: 8,
+          fillColor: color,
+          color: '#fff',
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.8
+        }).addTo(map);
+        marker.bindPopup(`<b>${r.title}</b><br>${r.location}<br>Score: ${r.ai_score || 'N/A'}`);
+        markers.push(marker);
+      }
+    });
+  }
+
+  // --- 4. CHART LOGIC ---
+  function initChart() {
+    const ctx = document.getElementById('categoryChart').getContext('2d');
+    chart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Medical', 'Rescue', 'Food', 'Infrastructure', 'Other'],
+        datasets: [{
+          data: [0,0,0,0,0], 
+          backgroundColor: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#64748b']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
+  }
+
+  function updateChart(reports) {
+    const counts = { 'Medical': 0, 'Rescue': 0, 'Food': 0, 'Infrastructure': 0, 'Other': 0 };
+    reports.forEach(r => {
+      if(counts[r.category] !== undefined) counts[r.category]++;
+      else counts['Other']++;
+    });
+    chart.data.datasets[0].data = Object.values(counts);
+    chart.update();
+  }
+
+  // --- 5. LOAD DATA (WITH DEMO SET) ---
+  async function loadData() {
+    let reports = [];
+
+    if (supabase) {
+      const { data, error } = await supabase.from("reports").select("*");
+      if (!error) reports = data;
+    } else {
+      // 📝 DEMO DATA SET (Used if no Supabase Config is found)
+      reports = [
+        { 
+          id: 101, title: 'Severe Flooding', location: 'Patna, Bihar', category: 'Rescue', status: 'pending', 
+          ai_score: null, latitude: 25.5941, longitude: 85.1376 
+        },
+        { 
+          id: 102, title: 'Oxygen Shortage', location: 'Mumbai, MH', category: 'Medical', status: 'verified', 
+          ai_score: 92, latitude: 19.0760, longitude: 72.8777 
+        },
+        { 
+          id: 103, title: 'Road Blockage', location: 'Delhi NCR', category: 'Infrastructure', status: 'pending', 
+          ai_score: null, latitude: 28.7041, longitude: 77.1025 
+        },
+        { 
+          id: 104, title: 'Food Distribution Needed', location: 'Chennai, TN', category: 'Food', status: 'verified', 
+          ai_score: 45, latitude: 13.0827, longitude: 80.2707 
+        },
+        { 
+          id: 105, title: 'Building Collapse', location: 'Kolkata, WB', category: 'Rescue', status: 'pending', 
+          ai_score: null, latitude: 22.5726, longitude: 88.3639 
+        },
+        { 
+          id: 106, title: 'Emergency Medication', location: 'Bangalore, KA', category: 'Medical', status: 'verified', 
+          ai_score: 78, latitude: 12.9716, longitude: 77.5946 
+        },
+        { 
+          id: 107, title: 'Power Outage', location: 'Hyderabad, TS', category: 'Infrastructure', status: 'pending', 
+          ai_score: null, latitude: 17.3850, longitude: 78.4867 
+        },
+        { 
+          id: 108, title: 'Water Supply Issue', location: 'Ahmedabad, GJ', category: 'Infrastructure', status: 'pending', 
+          ai_score: null, latitude: 23.0225, longitude: 72.5714 
+        }
+      ];
+    }
+
+    renderDashboard(reports);
+  }
+
+  function renderDashboard(reports) {
+    // Stats
+    document.getElementById('total-count').innerText = reports.length;
+    document.getElementById('pending-count').innerText = reports.filter(r => r.status === 'pending').length;
+    document.getElementById('verified-count').innerText = reports.filter(r => r.status === 'verified').length;
+
+    updateMap(reports);
+    updateChart(reports);
+
+    const tbody = document.getElementById('reports-body');
+    tbody.innerHTML = '';
+
+    reports.forEach(r => {
+      let scoreHtml = '';
+      if (r.ai_score) {
+        let colorClass = r.ai_score > 70 ? 'score-high' : (r.ai_score > 40 ? 'score-med' : 'score-low');
+        scoreHtml = `<span class="score-display ${colorClass}">${r.ai_score}/100</span>`;
+      } else {
+        scoreHtml = `<button class="ai-btn" onclick="simulateAIScoring('${r.id}')"><i class="fa-solid fa-wand-magic-sparkles"></i> Analyze</button>`;
+      }
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <div style="font-weight:600">${r.title}</div>
+          <small style="color:var(--text-muted)">${r.category}</small>
+        </td>
+        <td>${r.location}</td>
+        <td><span class="status-badge status-${r.status}">${r.status}</span></td>
+        <td id="score-cell-${r.id}">${scoreHtml}</td>
+        <td>
+          <button class="action-btn" onclick="verifyReport('${r.id}')">Verify</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // --- 6. ACTIONS ---
+  async function simulateAIScoring(id) {
+    const cell = document.getElementById(`score-cell-${id}`);
+    cell.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
+    await new Promise(r => setTimeout(r, 1500));
+    const randomScore = Math.floor(Math.random() * (95 - 30) + 30);
+    
+    let colorClass = randomScore > 70 ? 'score-high' : (randomScore > 40 ? 'score-med' : 'score-low');
+    cell.innerHTML = `<span class="score-display ${colorClass}">${randomScore}/100</span>`;
+    
+    if(supabase) await supabase.from('reports').update({ ai_score: randomScore }).eq('id', id);
+  }
+
+  async function verifyReport(id) {
+    if(supabase) {
+        await supabase.from('reports').update({ status: 'verified' }).eq('id', id);
+    } else {
+        // Mock update for demo
+        alert(`Report ID ${id} marked as Verified!`);
+    }
+    loadData();
+  }
+
+  async function checkRole() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || user.user_metadata.role !== 'admin') {
+      alert("Access Denied");
+      window.location.href = "login.html";
+    }
+  }
+
+  function listenToUpdates() {
+    if(!supabase) return;
+    supabase.channel('reports-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reports' }, payload => {
+        loadData();
+      })
+      .subscribe();
+  }
+
+  function logout() {
+    if(supabase) supabase.auth.signOut();
+    window.location.href = "login.html";
+  }
+
+  // Start
+  initApp();
+
+</script>
+</body>
+</html>
